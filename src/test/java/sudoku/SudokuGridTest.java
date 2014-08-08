@@ -18,10 +18,25 @@ public class SudokuGridTest {
 	}
 	
 	@Test 
-	public void testSelectInvalidCell() {
+	public void testSelectInvalidCellUpperBound() {
 		int sudokuWidth = grid.getTotalWidth();
 		int sudokuHeight = grid.getTotalHeight();
 		SudokuCell cell = grid.getCell(sudokuWidth, sudokuHeight);
 		Assert.assertNull(cell);
+	}
+	
+	@Test
+	public void testSelectInvalidCellLowerBound() {
+		Assert.assertNull(grid.getCell(-1, -1));
+	}
+	
+	@Test
+	public void testSelectInvalidCellMixedBound() {
+		Assert.assertNull(grid.getCell(0, -1));
+		Assert.assertNull(grid.getCell(-1, 0));
+		Assert.assertNull(grid.getCell(0, grid.getTotalHeight()));
+		Assert.assertNull(grid.getCell(grid.getTotalWidth(), 0));
+		Assert.assertNull(grid.getCell(grid.getTotalWidth(), -1));
+		Assert.assertNull(grid.getCell(-1, grid.getTotalHeight()));
 	}
 }

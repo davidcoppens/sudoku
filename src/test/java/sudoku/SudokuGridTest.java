@@ -11,9 +11,10 @@ public class SudokuGridTest {
 
 	private static final int GRID_WIDTH = 9;
 	private static final int GRID_HEIGHT = 9;
+	private static final int SEGMENT_SIZE = 3;
 	
 	// class under test
-	private final SudokuGrid grid = new SudokuGrid(GRID_WIDTH, GRID_HEIGHT);
+	private final SudokuGrid grid = new SudokuGrid(GRID_WIDTH, GRID_HEIGHT, SEGMENT_SIZE);
 	
 	@Test
 	public void testSelectValidCellBounds() {
@@ -48,6 +49,11 @@ public class SudokuGridTest {
 	public void testGridDimensions() {
 		Assert.assertEquals(GRID_WIDTH, grid.getTotalWidth());
 		Assert.assertEquals(GRID_HEIGHT, grid.getTotalHeight());
+	}
+	
+	@Test
+	public void testGetSegmentSize() {
+		Assert.assertEquals(SEGMENT_SIZE, grid.getSegmentSize());
 	}
 	
 	@Test

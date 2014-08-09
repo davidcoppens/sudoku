@@ -1,6 +1,5 @@
 package nl.concipit.sudoku.model;
 
-
 /**
  * Representation of a Sudoku Grid
  * 
@@ -12,7 +11,9 @@ public class SudokuGrid {
 	private int width;
 	/** Grid height: numbers of rows */
 	private int height;
-	
+	/** Segment size */
+	private int segmentSize;
+
 	/** Cells */
 	private SudokuCell[][] cells;
 
@@ -23,15 +24,17 @@ public class SudokuGrid {
 	 *            number of columns in the grid
 	 * @param height
 	 *            number of rows in the grid
+	 * @param segmentSize
+	 *            Size of segments
 	 */
-	public SudokuGrid(int width, int height) {
+	public SudokuGrid(int width, int height, int segmentSize) {
 		this.width = width;
 		this.height = height;
-		
+		this.segmentSize = segmentSize;
+
 		// initialize the grid with empty cells
 		resetGrid(width, height);
 	}
-
 
 	/**
 	 * Get cell at index i,j of the grid
@@ -48,14 +51,17 @@ public class SudokuGrid {
 			result = cells[i][j];
 		}
 		return result;
-	}	
+	}
 
 	/**
 	 * Set cell at index i,j of the grid
 	 * 
-	 * @param i  column
-	 * @param j row
-	 * @param cell cell to set
+	 * @param i
+	 *            column
+	 * @param j
+	 *            row
+	 * @param cell
+	 *            cell to set
 	 */
 	public void setCell(int i, int j, SudokuCell cell) {
 		cells[i][j] = cell;
@@ -83,8 +89,8 @@ public class SudokuGrid {
 	/**
 	 * Returns Sudoku Segment indicated by the specified index.
 	 * 
-	 * A sudoku grid is made up of a number of segments, each of which contains an
-	 * array cells.
+	 * A sudoku grid is made up of a number of segments, each of which contains
+	 * an array cells.
 	 * 
 	 * @param i
 	 * @param j
@@ -93,17 +99,28 @@ public class SudokuGrid {
 	public SudokuSegment getSegment(int i, int j) {
 		return new SudokuSegment();
 	}
-	
+
+	/**
+	 * Returns the segment size
+	 * 
+	 * @return segment size
+	 */
+	public int getSegmentSize() {
+		return segmentSize;
+	}
+
 	/**
 	 * Resets the grid to the specified dimensions filled with empty cells.
 	 * 
-	 * @param width Width of the grid
-	 * @param height Height of the grid
+	 * @param width
+	 *            Width of the grid
+	 * @param height
+	 *            Height of the grid
 	 */
 	private void resetGrid(int width, int height) {
 		// init cells
 		this.cells = new SudokuCell[width][height];
-		
+
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				this.cells[i][j] = new SudokuCell();

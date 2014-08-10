@@ -23,7 +23,7 @@ public class SudokuGridBuilderTest {
 	
 	@Test
 	public void testValidInputSingleLine() throws IllegalGridInputException {
-		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3|1;2;3"));
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3|4;5;6"));
 		Assert.assertEquals(1, grid.getTotalHeight());
 		Assert.assertEquals(6, grid.getTotalWidth());
 	}
@@ -74,9 +74,38 @@ public class SudokuGridBuilderTest {
 	
 	@Test
 	public void testSingleSegments() throws IllegalGridInputException {
-		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream(";1;3;3;\n;;;1;3"));
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream(";1;3;2;\n;;;1;3"));
 		Assert.assertEquals(Integer.valueOf(3), grid.getCell(2,0).getValue());
 		Assert.assertEquals(Integer.valueOf(1), grid.getCell(3,1).getValue());
 		Assert.assertNull(grid.getCell(1,1).getValue());
+	}
+	
+	@Test
+	public void testIgnoreWhiteLines() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("\n1;2;3\n\n1;3;2\n\n"));
+		Assert.assertEquals(3, grid.getTotalWidth());
+		Assert.assertEquals(2, grid.getTotalHeight());
+		Assert.assertEquals(3, grid.getSegmentSize());
+	}
+	
+	@Test
+	public void testWhiteSpaceTrimmed() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("\n   1; 2     ; 3 \n 1 ; 3 ;       2 \n\n"));
+		Assert.assertEquals(3, grid.getTotalWidth());
+		Assert.assertEquals(2, grid.getTotalHeight());
+		Assert.assertEquals(3, grid.getSegmentSize());
+		Assert.assertEquals(Integer.valueOf(2), grid.getCell(2, 1).getValue());
+	}
+	
+	@Test(expected=IllegalGridInputException.class)
+	public void testIllegalCellValue() throws IllegalGridInputException {
+		SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;5"));
+		Assert.fail();
+	}
+	
+	@Test(expected=IllegalGridInputException.class)
+	public void testDoubleValueInRow() throws IllegalGridInputException {
+		SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;1"));
+		Assert.fail();
 	}
 }

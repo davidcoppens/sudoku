@@ -1,8 +1,11 @@
 package sudoku;
 
+import nl.concipit.sudoku.SudokuGridBuilder;
+import nl.concipit.sudoku.exception.IllegalGridInputException;
 import nl.concipit.sudoku.model.SudokuCell;
 import nl.concipit.sudoku.model.SudokuGrid;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -76,5 +79,17 @@ public class SudokuGridTest {
 		SudokuCell cell = new SudokuCell();
 		grid.setCell(0, 0, cell);
 		Assert.assertEquals(cell, grid.getCell(0, 0));
+	}
+	
+	@Test
+	public void testCompleteRow() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3"));
+		Assert.assertTrue(grid.isCompleteRow(0));
+	}
+
+	@Test
+	public void testIncompleteRow() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;;3"));
+		Assert.assertFalse(grid.isCompleteRow(0));
 	}
 }

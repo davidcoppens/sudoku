@@ -2,6 +2,7 @@ package nl.concipit.sudoku;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 
 import nl.concipit.sudoku.exception.IllegalGridInputException;
@@ -9,6 +10,7 @@ import nl.concipit.sudoku.model.SudokuCell;
 import nl.concipit.sudoku.model.SudokuGrid;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Builder for sudoku grids based on input.
@@ -17,6 +19,9 @@ import org.apache.commons.io.IOUtils;
  *
  */
 public class SudokuGridBuilder {
+
+	private static final String CELL_DELIMITER = ";";
+	private static final String SEGMENT_DELIMITER = "\\|";
 
 	/**
 	 * Constructs a SudokuGrid by reading the input stream; <br/>
@@ -39,40 +44,17 @@ public class SudokuGridBuilder {
 			}
 			List<String> lines = IOUtils.readLines(inputStream);
 
-			if (lines.isEmpty()) {
-				throw new IllegalGridInputException();
-			}
-		
+			// prepare the grid definition
+			prepareGridDefinition(lines);
+
 			int row = 0;
 			for (String line : lines) {
-				String[] segments = line.split("\\|");
-				int column = 0;
-				for (String segment : segments) {
-
-					String[] cells = segment.split(";", -1);
-
-					if (grid == null) {
-						grid = new SudokuGrid(cells.length * segments.length,
-								lines.size(), cells.length);
-					} else {
-						if (cells.length * segments.length != grid.getTotalWidth()) {
-							throw new IllegalGridInputException();
-						}
-						if (cells.length != grid.getSegmentSize()) {
-							throw new IllegalGridInputException();
-						}
-					}
-
-					for (String cell : cells) {
-						if (cell != null && !"".equals(cell)) {
-							grid.setCell(column, row,
-									new SudokuCell(Integer.parseInt(cell)));
-						} else {
-							grid.setCell(column, row, new SudokuCell());
-						}
-						column++;
-					}
+				if (grid == null) {
+					grid = initializeGrid(lines.size(), line);
 				}
+
+				// process the line
+				processLine(grid, lines.size(), row, line);
 				row++;
 			}
 
@@ -82,5 +64,113 @@ public class SudokuGridBuilder {
 			throw new IllegalGridInputException(e);
 		}
 
+	}
+
+	/**
+	 * Creates an empty grid with the specified grid height and grid width
+	 * determined by the supplied line
+	 * 
+	 * @param gridHeight
+	 *            Height of the grid
+	 * @param line
+	 *            One line of the grid to be created
+	 * @return Grid with specified height and width as determined based on the
+	 *         line
+	 */
+	private static SudokuGrid initializeGrid(int gridHeight, String line) {
+		SudokuGrid grid;
+		// init the grid
+		String[] segments = line.split(SEGMENT_DELIMITER, -1);
+		String[] cells = segments[0].split(CELL_DELIMITER, -1);
+
+		grid = new SudokuGrid(cells.length * segments.length, gridHeight,
+				cells.length);
+		return grid;
+	}
+
+	/**
+	 * Process one line of a grid definition
+	 * 
+	 * @param grid
+	 *            Sudoku grid to which to add the processed line; if this is the
+	 *            first line, the grid is null
+	 * @param gridHeight
+	 *            Height of the sudoku grid
+	 * @param row
+	 *            row of the sudoku grid to which this line corresponds
+	 * @param line
+	 *            the line to process
+	 * @throws IllegalGridInputException
+	 *             thrown if the line leads to an invalid sudoku grid
+	 */
+	private static void processLine(SudokuGrid grid, int gridHeight, int row,
+			String line) throws IllegalGridInputException {
+
+		String[] segments = line.split(SEGMENT_DELIMITER);
+		int column = 0;
+		for (String segment : segments) {
+
+			String[] cells = segment.split(CELL_DELIMITER, -1);
+
+			if (cells.length * segments.length != grid.getTotalWidth()) {
+				throw new IllegalGridInputException();
+			}
+			if (cells.length != grid.getSegmentSize()) {
+				throw new IllegalGridInputException();
+			}
+
+			for (String cell : cells) {
+				cell = cell.trim();
+				if (!StringUtils.isEmpty(cell)) {
+					Integer cellValue = Integer.parseInt(cell);
+
+					// check whether this is a possible value
+					if (cellValue <= 0 || cellValue > grid.getTotalWidth()) {
+						throw new IllegalGridInputException();
+					}
+					// check whether this value is already in the row
+					for (int i = 0; i < column; i++) {
+						Integer val = grid.getCell(i, row).getValue();
+						if (val != null) {
+							if (val.equals(cellValue)) {
+								throw new IllegalGridInputException();
+							}
+						}
+					}
+
+					grid.setCell(column, row, new SudokuCell(cellValue));
+				} else {
+					grid.setCell(column, row, new SudokuCell());
+				}
+				column++;
+			}
+		}
+	}
+
+	/**
+	 * Prepares the list of lines representing a sudoku grid for further
+	 * processing;
+	 * 
+	 * empty lines will be removed;
+	 * 
+	 * @param lines
+	 *            Lines to be processed; empty lines will be removed
+	 * @throws IllegalGridInputException
+	 *             Thrown if input list is empty
+	 */
+	private static void prepareGridDefinition(List<String> lines)
+			throws IllegalGridInputException {
+		if (lines.isEmpty()) {
+			throw new IllegalGridInputException();
+		}
+
+		// first, let's remove any empty lines, since they are ignored
+		Iterator<String> it = lines.iterator();
+		while (it.hasNext()) {
+			String line = it.next();
+			if (StringUtils.isEmpty(line)) {
+				it.remove();
+			}
+		}
 	}
 }

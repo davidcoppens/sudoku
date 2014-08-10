@@ -1,5 +1,8 @@
 package nl.concipit.sudoku.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Representation of a Sudoku Grid
  * 
@@ -126,6 +129,24 @@ public class SudokuGrid {
 				this.cells[i][j] = new SudokuCell();
 			}
 		}
+	}
+
+	/**
+	 * Checks whether the specified row is complete (i.e. all integers i: 1 < i
+	 * <= gridWidth are represented)
+	 * 
+	 * @param row
+	 *            number of row to check
+	 * @return true if the row is complete, false otherwise
+	 */
+	public boolean isCompleteRow(int row) {
+		Map<Integer, Integer> valueMap = new HashMap<Integer, Integer>();
+		for (int i = 0; i < width; i++) {
+			if (cells[i][row].getValue() != null) {
+				valueMap.put(cells[i][row].getValue(), i);
+			}
+		}
+		return valueMap.size() == width;
 	}
 
 }

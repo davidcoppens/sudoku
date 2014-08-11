@@ -92,4 +92,16 @@ public class SudokuGridTest {
 		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;;3"));
 		Assert.assertFalse(grid.isCompleteRow(0));
 	}
+	
+	@Test
+	public void testCompleteColumn() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3\n2;3;1\n3;1;2"));
+		Assert.assertTrue(grid.isCompleteColumn(0));
+	}
+	
+	@Test
+	public void testIncompleteColumn() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3\n2;3;1\n;1;2"));
+		Assert.assertFalse(grid.isCompleteColumn(0));	
+	}
 }

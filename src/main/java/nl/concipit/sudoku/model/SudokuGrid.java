@@ -149,4 +149,23 @@ public class SudokuGrid {
 		return valueMap.size() == width;
 	}
 
+	/**
+	 * Checks whether the specified column is complete (i.e. all integers i : 1
+	 * < i <= gridHeight are represented)
+	 * 
+	 * 
+	 * @param column
+	 *            column to check
+	 * @return true if the column is complete, false otherwise
+	 */
+	public boolean isCompleteColumn(int column) {
+		Map<Integer, Integer> valueMap = new HashMap<Integer, Integer>();
+		for (int i = 0; i < height; i++) {
+			if (cells[column][i].getValue() != null) {
+				valueMap.put(cells[column][i].getValue(), i);
+			}
+		}
+		return valueMap.size() == height;
+	}
+
 }

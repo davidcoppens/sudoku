@@ -82,7 +82,7 @@ public class SudokuGridBuilderTest {
 	
 	@Test
 	public void testIgnoreWhiteLines() throws IllegalGridInputException {
-		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("\n1;2;3\n\n1;3;2\n\n"));
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("\n1;2;3\n\n2;3;1\n\n"));
 		Assert.assertEquals(3, grid.getTotalWidth());
 		Assert.assertEquals(2, grid.getTotalHeight());
 		Assert.assertEquals(3, grid.getSegmentSize());
@@ -90,11 +90,11 @@ public class SudokuGridBuilderTest {
 	
 	@Test
 	public void testWhiteSpaceTrimmed() throws IllegalGridInputException {
-		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("\n   1; 2     ; 3 \n 1 ; 3 ;       2 \n\n"));
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("\n   1; 2     ; 3 \n 2 ; 3 ;       1 \n\n"));
 		Assert.assertEquals(3, grid.getTotalWidth());
 		Assert.assertEquals(2, grid.getTotalHeight());
 		Assert.assertEquals(3, grid.getSegmentSize());
-		Assert.assertEquals(Integer.valueOf(2), grid.getCell(2, 1).getValue());
+		Assert.assertEquals(Integer.valueOf(1), grid.getCell(2, 1).getValue());
 	}
 	
 	@Test(expected=IllegalGridInputException.class)
@@ -106,6 +106,12 @@ public class SudokuGridBuilderTest {
 	@Test(expected=IllegalGridInputException.class)
 	public void testDoubleValueInRow() throws IllegalGridInputException {
 		SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;1"));
+		Assert.fail();
+	}
+	
+	@Test(expected=IllegalGridInputException.class)
+	public void testDoubleValueInColumn() throws IllegalGridInputException {
+		SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3\n1;3;2"));
 		Assert.fail();
 	}
 }

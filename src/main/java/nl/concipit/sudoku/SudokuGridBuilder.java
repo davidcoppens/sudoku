@@ -130,11 +130,14 @@ public class SudokuGridBuilder {
 					}
 					// check whether this value is already in the row
 					for (int i = 0; i < column; i++) {
-						Integer val = grid.getCell(i, row).getValue();
-						if (val != null) {
-							if (val.equals(cellValue)) {
-								throw new IllegalGridInputException();
-							}
+						if (containsEqualValue(grid, i, row, cellValue)) {
+							throw new IllegalGridInputException();
+						}
+					}
+					// check whether this value is already in the column
+					for (int i = 0; i < row; i++) {
+						if (containsEqualValue(grid, column, i, cellValue)) {
+							throw new IllegalGridInputException();
 						}
 					}
 
@@ -145,6 +148,16 @@ public class SudokuGridBuilder {
 				column++;
 			}
 		}
+	}
+
+	private static boolean containsEqualValue(SudokuGrid grid, int column,
+			int row, Integer value) throws IllegalGridInputException {
+		boolean result = false;
+		Integer val = grid.getCell(column, row).getValue();
+		if (val != null) {
+			result = val.equals(value);
+		}
+		return result;
 	}
 
 	/**

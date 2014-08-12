@@ -1,10 +1,11 @@
 package nl.concipit.sudoku.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import nl.concipit.sudoku.util.GridUtils;
 
 /**
  * Representation of a Sudoku Grid
@@ -103,7 +104,7 @@ public class SudokuGrid {
 	 * @return the segment
 	 */
 	public SudokuSegment getSegment(int i, int j) {
-		return new SudokuSegment();
+		return new SudokuSegment(width, height);
 	}
 
 	/**
@@ -159,7 +160,7 @@ public class SudokuGrid {
 	 * @return List of numbers missing in the row (ordered ascending)
 	 */
 	public Collection<Integer> getMissingInRow(int row) {
-		List<Integer> result = getValueList(width);
+		List<Integer> result = GridUtils.getValueList(width);
 		
 		// remove set values
 		for (int i = 0; i < width; i++) {
@@ -178,7 +179,7 @@ public class SudokuGrid {
 	 * @return List of numbers missing in the column (ordered ascending)
 	 */
 	public Object getMissingInColumn(int column) {
-		List<Integer> result = getValueList(height);
+		List<Integer> result = GridUtils.getValueList(height);
 		
 		// remove set values
 		for (int i = 0; i < height; i++) {
@@ -188,22 +189,6 @@ public class SudokuGrid {
 			}
 		}
 		return result; 
-	}
-
-	/**
-	 * Creates an ordered list of integers with all values from 1 up to and including the specified
-	 * maxValue
-	 * 
-	 * @param maxValue Maximum integer in the list
-	 * @return Ordered list of integers i: 1 <= i <= maxValue
-	 */
-	private List<Integer> getValueList(int maxValue) {
-		List<Integer> result = new ArrayList<Integer>();
-		// init list with all values
-		for (int i = 1; i <= maxValue; i++) {
-			result.add(Integer.valueOf(i));
-		}
-		return result;
 	}
 
 	/**
@@ -223,5 +208,19 @@ public class SudokuGrid {
 				this.cells[i][j] = new SudokuCell();
 			}
 		}
+	}
+
+	/**
+	 * Returns list of numbers missing in the segment containing the cell with specified
+	 * coordinates
+	 * 
+	 * @param column column
+	 * @param row row
+	 * @return List of missing numbers ordered ascending
+	 */
+	public List<Integer> getMissingInSegment(int column, int row) {
+		// get the segment 
+		SudokuSegment segment = getSegment(column, row);
+		return segment.getMissingValues();
 	}
 }

@@ -154,4 +154,10 @@ public class SudokuGridTest {
 		Assert.assertEquals(Arrays.asList(), grid.getMissingInColumn(1));
 		Assert.assertEquals(Arrays.asList(1, 2), grid.getMissingInColumn(2));
 	}
+	
+	@Test
+	public void testMissingInSegmentNone() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3\n2;3;1\n3;1;2"));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInSegment(0, 0));
+	}
 }

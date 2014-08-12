@@ -1,6 +1,9 @@
 package nl.concipit.sudoku.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -113,25 +116,6 @@ public class SudokuGrid {
 	}
 
 	/**
-	 * Resets the grid to the specified dimensions filled with empty cells.
-	 * 
-	 * @param width
-	 *            Width of the grid
-	 * @param height
-	 *            Height of the grid
-	 */
-	private void resetGrid(int width, int height) {
-		// init cells
-		this.cells = new SudokuCell[width][height];
-
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				this.cells[i][j] = new SudokuCell();
-			}
-		}
-	}
-
-	/**
 	 * Checks whether the specified row is complete (i.e. all integers i: 1 < i
 	 * <= gridWidth are represented)
 	 * 
@@ -168,4 +152,76 @@ public class SudokuGrid {
 		return valueMap.size() == height;
 	}
 
+	/**
+	 * Returns ordered list of numbers missing in the specified row
+	 * 
+	 * @param row row 
+	 * @return List of numbers missing in the row (ordered ascending)
+	 */
+	public Collection<Integer> getMissingInRow(int row) {
+		List<Integer> result = getValueList(width);
+		
+		// remove set values
+		for (int i = 0; i < width; i++) {
+			SudokuCell cell = cells[i][row];
+			if (cell != null && cell.getValue() != null) {
+				result.remove(cell.getValue());
+			}
+		}
+		return result; 
+	}
+
+	/**
+	 * Returns ordered list of numbers missing in the specified column
+	 * 
+	 * @param column column 
+	 * @return List of numbers missing in the column (ordered ascending)
+	 */
+	public Object getMissingInColumn(int column) {
+		List<Integer> result = getValueList(height);
+		
+		// remove set values
+		for (int i = 0; i < height; i++) {
+			SudokuCell cell = cells[column][i];
+			if (cell != null && cell.getValue() != null) {
+				result.remove(cell.getValue());
+			}
+		}
+		return result; 
+	}
+
+	/**
+	 * Creates an ordered list of integers with all values from 1 up to and including the specified
+	 * maxValue
+	 * 
+	 * @param maxValue Maximum integer in the list
+	 * @return Ordered list of integers i: 1 <= i <= maxValue
+	 */
+	private List<Integer> getValueList(int maxValue) {
+		List<Integer> result = new ArrayList<Integer>();
+		// init list with all values
+		for (int i = 1; i <= maxValue; i++) {
+			result.add(Integer.valueOf(i));
+		}
+		return result;
+	}
+
+	/**
+	 * Resets the grid to the specified dimensions filled with empty cells.
+	 * 
+	 * @param width
+	 *            Width of the grid
+	 * @param height
+	 *            Height of the grid
+	 */
+	private void resetGrid(int width, int height) {
+		// init cells
+		this.cells = new SudokuCell[width][height];
+
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				this.cells[i][j] = new SudokuCell();
+			}
+		}
+	}
 }

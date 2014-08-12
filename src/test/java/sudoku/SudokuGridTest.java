@@ -1,5 +1,7 @@
 package sudoku;
 
+import java.util.Arrays;
+
 import nl.concipit.sudoku.SudokuGridBuilder;
 import nl.concipit.sudoku.exception.IllegalGridInputException;
 import nl.concipit.sudoku.model.SudokuCell;
@@ -103,5 +105,53 @@ public class SudokuGridTest {
 	public void testIncompleteColumn() throws IllegalGridInputException {
 		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3\n2;3;1\n;1;2"));
 		Assert.assertFalse(grid.isCompleteColumn(0));	
+	}
+	
+	@Test
+	public void testMissingInRowAll() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream(";;\n;;\n;;"));
+		Assert.assertEquals(Arrays.asList(1, 2, 3), grid.getMissingInRow(0));
+		Assert.assertEquals(Arrays.asList(1, 2, 3), grid.getMissingInRow(1));
+		Assert.assertEquals(Arrays.asList(1, 2, 3), grid.getMissingInRow(2));
+	}
+	
+	@Test
+	public void testMissingInRowNone() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3\n2;3;1\n3;1;2"));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInRow(0));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInRow(1));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInRow(2));
+	}
+	
+	@Test
+	public void testMissingInRowSome() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;;3\n2;3;1\n;1;"));
+		Assert.assertEquals(Arrays.asList(2), grid.getMissingInRow(0));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInRow(1));
+		Assert.assertEquals(Arrays.asList(2, 3), grid.getMissingInRow(2));
+	}
+	
+	@Test
+	public void testMissingInColumnAll() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream(";;\n;;\n;;"));
+		Assert.assertEquals(Arrays.asList(1, 2, 3), grid.getMissingInColumn(0));
+		Assert.assertEquals(Arrays.asList(1, 2, 3), grid.getMissingInColumn(1));
+		Assert.assertEquals(Arrays.asList(1, 2, 3), grid.getMissingInColumn(2));
+	}
+	
+	@Test
+	public void testMissingInColumnNone() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3\n2;3;1\n3;1;2"));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInColumn(0));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInColumn(1));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInColumn(2));
+	}
+	
+	@Test
+	public void testMissingInColumnSome() throws IllegalGridInputException {
+		SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;3\n;3;\n3;1;"));
+		Assert.assertEquals(Arrays.asList(2), grid.getMissingInColumn(0));
+		Assert.assertEquals(Arrays.asList(), grid.getMissingInColumn(1));
+		Assert.assertEquals(Arrays.asList(1, 2), grid.getMissingInColumn(2));
 	}
 }

@@ -1,6 +1,5 @@
 package nl.concipit.sudoku.model;
 
-import java.util.Arrays;
 import java.util.List;
 
 import nl.concipit.sudoku.util.GridUtils;
@@ -99,6 +98,15 @@ public class SudokuSegment {
 			result = cells[column][row];
 		}
 		return result;
+	}
+
+	/**
+	 * Returns true if the segment contains all required values
+	 * 
+	 * @return True if segment contains all values, false otherwise
+	 */
+	public boolean isComplete() {
+		return getMissingValues().isEmpty();
 	}
 
 }

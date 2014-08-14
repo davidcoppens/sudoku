@@ -23,6 +23,9 @@ public class SudokuGrid {
 
     /** Cells */
     private SudokuCell[][] cells;
+    
+    /** Segments */
+    private SudokuSegment[][] segments;
 
     /**
      * Constructor
@@ -104,7 +107,7 @@ public class SudokuGrid {
      * @return the segment
      */
     public SudokuSegment getSegment(int i, int j) {
-        return new SudokuSegment(width, height);
+        return segments[i][j];
     }
 
     /**
@@ -208,6 +211,16 @@ public class SudokuGrid {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 this.cells[i][j] = new SudokuCell();
+            }
+        }
+        
+        // init segments
+        int segWidth = width / segmentSize;
+        int segHeight = height / segmentSize;
+        this.segments = new SudokuSegment[segWidth][segHeight];
+        for (int i = 0; i < segWidth; i++) {
+            for (int j = 0; j < segHeight; j++) {
+                this.segments[i][j] = new SudokuSegment(segmentSize, segmentSize);
             }
         }
     }

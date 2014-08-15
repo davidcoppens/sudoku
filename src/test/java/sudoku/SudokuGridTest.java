@@ -80,7 +80,7 @@ public class SudokuGridTest {
         Assert.assertEquals(1, grid.getNumberOfSegments());
         
         grid = SudokuGridBuilder.buildGrid(IOUtils
-                .toInputStream(";;|;;|;;\n;;|;;|;;\n;;|;;|;;"));
+                .toInputStream(";|;\n;|;\n;|;"));
         Assert.assertEquals(2, grid.getNumberOfSegments());        
     }
 
@@ -176,7 +176,28 @@ public class SudokuGridTest {
     @Test
     public void testMissingInSegmentNone() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
-                .toInputStream("1;2;3\n2;3;1\n3;1;2"));
+                .toInputStream("1;2;3\n4;5;6\n7;8;9"));
         Assert.assertEquals(Arrays.asList(), grid.getMissingInSegment(0, 0));
+    }
+    
+    @Test
+    public void testMissingInSegmentAll() throws IllegalGridInputException {
+        SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
+                .toInputStream(";;\n;;\n;;"));
+        Assert.assertEquals(Arrays.asList(1,2,3,4,5,6,7,8,9), grid.getMissingInSegment(0, 0));
+    }
+    
+    @Test
+    public void testMissingInSegmentSome() throws IllegalGridInputException {
+        SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
+                .toInputStream("1;;3\n;5;6\n;8;"));
+        Assert.assertEquals(Arrays.asList(2,4,7,9), grid.getMissingInSegment(0, 0));
+    }
+    
+    @Test
+    public void testGridComplete() throws IllegalGridInputException {
+        SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
+                .toInputStream("1;2;3\n4;5;6\n7;8;9"));
+        Assert.assertTrue(grid.isComplete());
     }
 }

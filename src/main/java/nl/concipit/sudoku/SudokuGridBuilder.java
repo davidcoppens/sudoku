@@ -157,7 +157,7 @@ public class SudokuGridBuilder {
             Integer cellValue = Integer.parseInt(trimmedCell);
 
             // check whether this is a possible value
-            if (cellValue <= 0 || cellValue > grid.getGridSize()) {
+            if (cellValue <= 0 || cellValue > (grid.getSegmentSize() * grid.getSegmentSize())) {
                 throw new IllegalGridInputException();
             }
 

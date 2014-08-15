@@ -16,13 +16,13 @@ import nl.concipit.sudoku.util.GridUtils;
 public class SudokuGrid {
     /** Grid size */
     private int gridSize;
-    
+
     /** Segment size */
     private int segmentSize;
 
     /** Cells */
     private SudokuCell[][] cells;
-    
+
     /** Segments */
     private SudokuSegment[][] segments;
 
@@ -73,10 +73,11 @@ public class SudokuGrid {
      */
     public void setCell(int i, int j, SudokuCell cell) {
         cells[i][j] = cell;
-        
+
         int segmentX = i / segmentSize;
         int segmentY = j / segmentSize;
-        getSegment(segmentX, segmentY).setCell(i % segmentSize, j % segmentSize, cell);
+        getSegment(segmentX, segmentY).setCell(i % segmentSize,
+                j % segmentSize, cell);
     }
 
     /**
@@ -200,7 +201,7 @@ public class SudokuGrid {
                 this.cells[i][j] = new SudokuCell();
             }
         }
-        
+
         // init segments
         int noSegments = gridSize / segmentSize;
         this.segments = new SudokuSegment[noSegments][noSegments];
@@ -229,9 +230,26 @@ public class SudokuGrid {
 
     /**
      * Returns the number of segments per row and column of the grid
+     * 
      * @return Number of segments
      */
     public int getNumberOfSegments() {
         return gridSize / segmentSize;
+    }
+
+    /**
+     * Verifies whether the grid is complete;
+     * 
+     * @return true if grid is complete, false otherwise
+     */
+    public boolean isComplete() {
+        boolean isComplete = true;
+        int noSegments = getNumberOfSegments();
+        for (int i = 0; i < noSegments; i++) {
+            for (int j = 0; j < noSegments; j++) {
+                isComplete = isComplete && getMissingInSegment(i, j).isEmpty();
+            }
+        }
+        return isComplete;
     }
 }

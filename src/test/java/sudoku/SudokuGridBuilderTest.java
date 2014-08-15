@@ -96,7 +96,7 @@ public class SudokuGridBuilderTest {
 
     @Test(expected = IllegalGridInputException.class)
     public void testIllegalCellValue() throws IllegalGridInputException {
-        SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;5"));
+        SudokuGridBuilder.buildGrid(IOUtils.toInputStream("1;2;10"));
         Assert.fail();
     }
 

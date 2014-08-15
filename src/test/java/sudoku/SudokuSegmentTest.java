@@ -14,7 +14,7 @@ public class SudokuSegmentTest {
 	@Test
 	public void testGetMissingValuesAll() {
 		SudokuSegment segment = new SudokuSegment(SIZE);
-		Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6),
+		Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9),
 				segment.getMissingValues());
 	}
 

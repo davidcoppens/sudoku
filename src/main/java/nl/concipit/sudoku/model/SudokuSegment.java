@@ -6,46 +6,33 @@ import nl.concipit.sudoku.util.GridUtils;
 
 public class SudokuSegment {
 
-    private int width;
-    private int height;
+    private int size;
     private SudokuCell[][] cells;
 
     /**
      * Creates a sudoku segment with the specified dimensions:
      * 
-     * width x height;
+     * size x size;
      * 
      * e.g. width: 3, height: 3
      * 
      * x ; x ; x x ; x ; x x ; x ; x
      * 
-     * @param width
-     *            Width of the segment
-     * @param height
-     *            Height of the segment
+     * @param size
+     *            Size of the segment
      */
-    public SudokuSegment(int width, int height) {
-        this.width = width;
-        this.height = height;
-        this.cells = new SudokuCell[width][height];
+    public SudokuSegment(int size) {
+        this.size = size;
+        this.cells = new SudokuCell[size][size];
     }
 
     /**
-     * Return width of the segment
+     * Return size of the segment
      * 
-     * @return Width
+     * @return Size
      */
-    public int getWidth() {
-        return width;
-    }
-
-    /**
-     * Return height of the segment
-     * 
-     * @return Height
-     */
-    public int getHeight() {
-        return height;
+    public int getSize() {
+        return size;
     }
 
     /**
@@ -54,9 +41,9 @@ public class SudokuSegment {
      * @return List ordered ascending
      */
     public List<Integer> getMissingValues() {
-        List<Integer> values = GridUtils.getValueList(width * height);
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
+        List<Integer> values = GridUtils.getValueList(size * size);
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
                 SudokuCell cell = cells[col][row];
                 if (cell != null && cell.getValue() != null) {
                     values.remove(cell.getValue());
@@ -77,7 +64,7 @@ public class SudokuSegment {
      *            Cell
      */
     public void setCell(int column, int row, SudokuCell cell) {
-        if (column < 0 || column >= width || row < 0 || row >= height) {
+        if (column < 0 || column >= size || row < 0 || row >= size) {
             throw new IllegalArgumentException();
         }
         cells[column][row] = cell;
@@ -94,7 +81,7 @@ public class SudokuSegment {
      */
     public SudokuCell getCell(int column, int row) {
         SudokuCell result = null;
-        if (column >= 0 && column < width && row >= 0 && row < height) {
+        if (column >= 0 && column < size && row >= 0 && row < size) {
             result = cells[column][row];
         }
         return result;

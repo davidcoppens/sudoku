@@ -14,10 +14,9 @@ import nl.concipit.sudoku.util.GridUtils;
  *
  */
 public class SudokuGrid {
-    /** Grid width: number of columns */
-    private int width;
-    /** Grid height: numbers of rows */
-    private int height;
+    /** Grid size */
+    private int gridSize;
+    
     /** Segment size */
     private int segmentSize;
 
@@ -30,20 +29,19 @@ public class SudokuGrid {
     /**
      * Constructor
      * 
-     * @param width
-     *            number of columns in the grid
+     * @param gridSize
+     *            Size of the grid: gridSize x gridSize
      * @param height
      *            number of rows in the grid
      * @param segmentSize
      *            Size of segments
      */
-    public SudokuGrid(int width, int height, int segmentSize) {
-        this.width = width;
-        this.height = height;
+    public SudokuGrid(int gridSize, int segmentSize) {
+        this.gridSize = gridSize;
         this.segmentSize = segmentSize;
 
         // initialize the grid with empty cells
-        resetGrid(width, height);
+        resetGrid();
     }
 
     /**
@@ -57,7 +55,7 @@ public class SudokuGrid {
      */
     public SudokuCell getCell(int i, int j) {
         SudokuCell result = null;
-        if (i >= 0 && i < width && j >= 0 && j < height) {
+        if (i >= 0 && i < gridSize && j >= 0 && j < gridSize) {
             result = cells[i][j];
         }
         return result;
@@ -75,25 +73,19 @@ public class SudokuGrid {
      */
     public void setCell(int i, int j, SudokuCell cell) {
         cells[i][j] = cell;
+        
+        int segmentX = i / segmentSize;
+        int segmentY = j / segmentSize;
+        getSegment(segmentX, segmentY).setCell(i % segmentSize, j % segmentSize, cell);
     }
 
     /**
-     * Returns the total width of the grid (i.e. the number of cells per row)
+     * Returns the size of the grid (grid has dimension size x size)
      * 
-     * @return width
+     * @return Size
      */
-    public int getTotalWidth() {
-        return width;
-    }
-
-    /**
-     * Returns the total height of the grid (i.e. the number of cells per
-     * column)
-     * 
-     * @return height
-     */
-    public int getTotalHeight() {
-        return height;
+    public int getGridSize() {
+        return gridSize;
     }
 
     /**
@@ -121,7 +113,7 @@ public class SudokuGrid {
 
     /**
      * Checks whether the specified row is complete (i.e. all integers i: 1 < i
-     * <= gridWidth are represented)
+     * <= gridSize are represented)
      * 
      * @param row
      *            number of row to check
@@ -129,17 +121,17 @@ public class SudokuGrid {
      */
     public boolean isCompleteRow(int row) {
         Map<Integer, Integer> valueMap = new HashMap<Integer, Integer>();
-        for (int i = 0; i < width; i++) {
+        for (int i = 0; i < gridSize; i++) {
             if (cells[i][row].getValue() != null) {
                 valueMap.put(cells[i][row].getValue(), i);
             }
         }
-        return valueMap.size() == width;
+        return valueMap.size() == gridSize;
     }
 
     /**
      * Checks whether the specified column is complete (i.e. all integers i : 1
-     * < i <= gridHeight are represented)
+     * < i <= gridSize are represented)
      * 
      * 
      * @param column
@@ -148,12 +140,12 @@ public class SudokuGrid {
      */
     public boolean isCompleteColumn(int column) {
         Map<Integer, Integer> valueMap = new HashMap<Integer, Integer>();
-        for (int i = 0; i < height; i++) {
+        for (int i = 0; i < gridSize; i++) {
             if (cells[column][i].getValue() != null) {
                 valueMap.put(cells[column][i].getValue(), i);
             }
         }
-        return valueMap.size() == height;
+        return valueMap.size() == gridSize;
     }
 
     /**
@@ -164,10 +156,10 @@ public class SudokuGrid {
      * @return List of numbers missing in the row (ordered ascending)
      */
     public Collection<Integer> getMissingInRow(int row) {
-        List<Integer> result = GridUtils.getValueList(width);
+        List<Integer> result = GridUtils.getValueList(gridSize);
 
         // remove set values
-        for (int i = 0; i < width; i++) {
+        for (int i = 0; i < gridSize; i++) {
             SudokuCell cell = cells[i][row];
             if (cell != null && cell.getValue() != null) {
                 result.remove(cell.getValue());
@@ -184,10 +176,10 @@ public class SudokuGrid {
      * @return List of numbers missing in the column (ordered ascending)
      */
     public List<Integer> getMissingInColumn(int column) {
-        List<Integer> result = GridUtils.getValueList(height);
+        List<Integer> result = GridUtils.getValueList(gridSize);
 
         // remove set values
-        for (int i = 0; i < height; i++) {
+        for (int i = 0; i < gridSize; i++) {
             SudokuCell cell = cells[column][i];
             if (cell != null && cell.getValue() != null) {
                 result.remove(cell.getValue());
@@ -198,29 +190,23 @@ public class SudokuGrid {
 
     /**
      * Resets the grid to the specified dimensions filled with empty cells.
-     * 
-     * @param width
-     *            Width of the grid
-     * @param height
-     *            Height of the grid
      */
-    private void resetGrid(int width, int height) {
+    private void resetGrid() {
         // init cells
-        this.cells = new SudokuCell[width][height];
+        this.cells = new SudokuCell[gridSize][gridSize];
 
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
                 this.cells[i][j] = new SudokuCell();
             }
         }
         
         // init segments
-        int segWidth = width / segmentSize;
-        int segHeight = height / segmentSize;
-        this.segments = new SudokuSegment[segWidth][segHeight];
-        for (int i = 0; i < segWidth; i++) {
-            for (int j = 0; j < segHeight; j++) {
-                this.segments[i][j] = new SudokuSegment(segmentSize, segmentSize);
+        int noSegments = gridSize / segmentSize;
+        this.segments = new SudokuSegment[noSegments][noSegments];
+        for (int i = 0; i < noSegments; i++) {
+            for (int j = 0; j < noSegments; j++) {
+                this.segments[i][j] = new SudokuSegment(segmentSize);
             }
         }
     }
@@ -239,5 +225,13 @@ public class SudokuGrid {
         // get the segment
         SudokuSegment segment = getSegment(column, row);
         return segment.getMissingValues();
+    }
+
+    /**
+     * Returns the number of segments per row and column of the grid
+     * @return Number of segments
+     */
+    public int getNumberOfSegments() {
+        return gridSize / segmentSize;
     }
 }

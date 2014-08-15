@@ -77,20 +77,20 @@ public class SudokuGridBuilder {
      * Creates an empty grid with the specified grid height and grid width
      * determined by the supplied line
      * 
-     * @param gridHeight
+     * @param gridSize
      *            Height of the grid
      * @param line
      *            One line of the grid to be created
      * @return Grid with specified height and width as determined based on the
      *         line
      */
-    private static SudokuGrid initializeGrid(int gridHeight, String line) {
+    private static SudokuGrid initializeGrid(int gridSize, String line) {
         SudokuGrid grid;
         // init the grid
-        String[] segments = line.split(SEGMENT_DELIMITER, -1);
+        String[] segments = line.split(SEGMENT_DELIMITER, -1);  
         String[] cells = segments[0].split(CELL_DELIMITER, -1);
 
-        grid = new SudokuGrid(cells.length * segments.length, gridHeight,
+        grid = new SudokuGrid(cells.length * segments.length,
                 cells.length);
         return grid;
     }
@@ -119,7 +119,7 @@ public class SudokuGridBuilder {
 
             String[] cells = segment.split(CELL_DELIMITER, -1);
 
-            if (cells.length * segments.length != grid.getTotalWidth()) {
+            if (cells.length * grid.getNumberOfSegments() != grid.getGridSize()) {
                 throw new IllegalGridInputException();
             }
             if (cells.length != grid.getSegmentSize()) {
@@ -157,13 +157,13 @@ public class SudokuGridBuilder {
             Integer cellValue = Integer.parseInt(trimmedCell);
 
             // check whether this is a possible value
-            if (cellValue <= 0 || cellValue > grid.getTotalWidth()) {
+            if (cellValue <= 0 || cellValue > grid.getGridSize()) {
                 throw new IllegalGridInputException();
             }
 
             // check whether this value is already in the row
-            if ((cellValue < grid.getTotalWidth() && !grid.getMissingInRow(row).contains(cellValue))
-                    || (cellValue < grid.getTotalHeight()) && !grid.getMissingInColumn(column).contains(cellValue)) {
+            if ((cellValue < grid.getGridSize() && !grid.getMissingInRow(row).contains(cellValue))
+                    || (cellValue < grid.getGridSize()) && !grid.getMissingInColumn(column).contains(cellValue)) {
                 throw new IllegalGridInputException();
             }
             grid.setCell(column, row, new SudokuCell(cellValue));

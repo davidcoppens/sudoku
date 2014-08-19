@@ -36,4 +36,13 @@ public class SudokuCell {
     public Integer getValue() {
         return value;
     }
+    
+    @Override
+    public String toString() {
+        String val = " ";
+        if (value != null) {
+            val = value.toString();
+        }
+        return String.format("[%s]", val);        
+    }
 }

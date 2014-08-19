@@ -8,6 +8,7 @@ import nl.concipit.sudoku.model.SudokuCell;
 import nl.concipit.sudoku.model.SudokuGrid;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -78,10 +79,10 @@ public class SudokuGridTest {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream(";;\n;;\n;;"));
         Assert.assertEquals(1, grid.getNumberOfSegments());
-        
+
         grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream(";|;\n;|;\n;|;"));
-        Assert.assertEquals(2, grid.getNumberOfSegments());        
+        Assert.assertEquals(2, grid.getNumberOfSegments());
     }
 
     @Test
@@ -179,25 +180,66 @@ public class SudokuGridTest {
                 .toInputStream("1;2;3\n4;5;6\n7;8;9"));
         Assert.assertEquals(Arrays.asList(), grid.getMissingInSegment(0, 0));
     }
-    
+
     @Test
     public void testMissingInSegmentAll() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream(";;\n;;\n;;"));
-        Assert.assertEquals(Arrays.asList(1,2,3,4,5,6,7,8,9), grid.getMissingInSegment(0, 0));
+        Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                grid.getMissingInSegment(0, 0));
     }
-    
+
     @Test
     public void testMissingInSegmentSome() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;;3\n;5;6\n;8;"));
-        Assert.assertEquals(Arrays.asList(2,4,7,9), grid.getMissingInSegment(0, 0));
+        Assert.assertEquals(Arrays.asList(2, 4, 7, 9),
+                grid.getMissingInSegment(0, 0));
     }
-    
+
     @Test
     public void testGridComplete() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n4;5;6\n7;8;9"));
         Assert.assertTrue(grid.isComplete());
+    }
+
+    @Test
+    public void testToStringOneSegment() throws IllegalGridInputException {
+        SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
+                .toInputStream("1;2;3\n2;3;1\n3;1;2"));
+        StringBuffer builder = new StringBuffer();
+        builder.append("*************").append(
+                IOUtils.LINE_SEPARATOR);
+
+        builder.append("* 1 | 2 | 3 *").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*-----------*").append(IOUtils.LINE_SEPARATOR);        
+        builder.append("* 2 | 3 | 1 *").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*-----------*").append(IOUtils.LINE_SEPARATOR);
+        builder.append("* 3 | 1 | 2 *").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*************").append(IOUtils.LINE_SEPARATOR);
+         
+        Assert.assertEquals(builder.toString(), grid.toString());
+    }
+    
+    @Test
+    public void testToStringMultiSegment() throws IllegalGridInputException {
+        SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
+                .toInputStream("1;2|3;4\n;|1;2\n3;1|;\n;|;"));
+        StringBuffer builder = new StringBuffer();
+        builder.append("*****************").append(
+                IOUtils.LINE_SEPARATOR);
+
+        builder.append("* 1 | 2 * 3 | 4 *").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*---------------*").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*   |   * 1 | 2 *").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*****************").append(IOUtils.LINE_SEPARATOR);
+        builder.append("* 3 | 1 *   |   *").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*---------------*").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*   |   *   |   *").append(IOUtils.LINE_SEPARATOR);
+        builder.append("*****************").append(
+                IOUtils.LINE_SEPARATOR);
+        
+        Assert.assertEquals(builder.toString(), grid.toString());
     }
 }

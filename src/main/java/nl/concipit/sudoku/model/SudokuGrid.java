@@ -1,9 +1,11 @@
 package nl.concipit.sudoku.model;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import nl.concipit.sudoku.util.GridUtils;
 
@@ -74,10 +76,7 @@ public class SudokuGrid {
     public void setCell(int i, int j, SudokuCell cell) {
         cells[i][j] = cell;
 
-        int segmentX = i / segmentSize;
-        int segmentY = j / segmentSize;
-        getSegment(segmentX, segmentY).setCell(i % segmentSize,
-                j % segmentSize, cell);
+        getSegment(i, j).setCell(i % segmentSize, j % segmentSize, cell);
     }
 
     /**
@@ -90,7 +89,8 @@ public class SudokuGrid {
     }
 
     /**
-     * Returns Sudoku Segment indicated by the specified index.
+     * Returns Sudoku Segment containing the cell indicated by the specified
+     * index.
      * 
      * A sudoku grid is made up of a number of segments, each of which contains
      * an array cells.
@@ -100,7 +100,10 @@ public class SudokuGrid {
      * @return the segment
      */
     public SudokuSegment getSegment(int i, int j) {
-        return segments[i][j];
+        int segmentX = i / segmentSize;
+        int segmentY = j / segmentSize;
+
+        return segments[segmentX][segmentY];
     }
 
     /**
@@ -156,7 +159,7 @@ public class SudokuGrid {
      *            row
      * @return List of numbers missing in the row (ordered ascending)
      */
-    public Collection<Integer> getMissingInRow(int row) {
+    public List<Integer> getMissingInRow(int row) {
         List<Integer> result = GridUtils.getValueList(gridSize);
 
         // remove set values
@@ -251,5 +254,46 @@ public class SudokuGrid {
             }
         }
         return isComplete;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer builder = new StringBuffer();
+        // each cell occupies 3; each line has one start and end char; 
+        // in between cells there is a marker
+        int lineLength = (gridSize * 3) + (gridSize - 1) + 2;
+        builder.append(StringUtils.repeat("*", lineLength)).append(
+                IOUtils.LINE_SEPARATOR);
+
+        for (int row = 0; row < gridSize; row++) {
+            builder.append("*");
+
+            for (int column = 0; column < gridSize; column++) {
+
+                builder.append(cells[column][row].toString().replaceAll("\\[", " ").replaceAll("\\]"," "));
+                
+                // segment or column marker
+                int nextCol = column + 1;
+                if (nextCol > 0 && nextCol < (gridSize - 1) && nextCol % segmentSize == 0) {
+                    builder.append("*");
+                } else if (nextCol > 0 && nextCol < gridSize ) {
+                    builder.append("|");
+                }
+            }
+            builder.append("*").append(IOUtils.LINE_SEPARATOR);
+            
+            if ((row + 1) > 0 && (row + 1) < (gridSize - 1) && (row + 1) % segmentSize == 0) {
+                builder.append(StringUtils.repeat("*", lineLength)).append(IOUtils.LINE_SEPARATOR);
+                    
+            }
+            else  if (row + 1 < gridSize) {
+                builder.append("*").append(StringUtils.repeat("-", lineLength - 2)).append("*").append(IOUtils.LINE_SEPARATOR);
+            }
+        }
+
+        builder.append(StringUtils.repeat("*", lineLength)).append(
+                IOUtils.LINE_SEPARATOR);
+
+        return builder.toString();
     }
 }

@@ -19,4 +19,15 @@ public class SudokuCellTest {
 		Assert.assertNull(cell.getValue());
 	}
 
+	@Test
+	public void testToStringNull() {
+	    SudokuCell cell = new SudokuCell();
+	    Assert.assertEquals("[ ]", cell.toString());
+	}
+	
+    @Test
+    public void testToStringValue() {
+        SudokuCell cell = new SudokuCell(new Integer(2));
+        Assert.assertEquals("[2]", cell.toString());
+    }
 }

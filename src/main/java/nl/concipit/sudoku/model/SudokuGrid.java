@@ -1,13 +1,14 @@
 package nl.concipit.sudoku.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.concipit.sudoku.util.GridUtils;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import nl.concipit.sudoku.util.GridUtils;
 
 /**
  * Representation of a Sudoku Grid
@@ -173,6 +174,32 @@ public class SudokuGrid {
     }
 
     /**
+     * Returns a list of values contained in the specified row.
+     * 
+     * @param row
+     *            Row
+     * @return List of values in the row
+     */
+    public List<Integer> getValuesInRow(int row) {
+        List<Integer> missing = getMissingInRow(row);
+
+        return invertList(missing);
+    }
+
+    /**
+     * Returns a list of values contained in the specified column.
+     * 
+     * @param column
+     *            Column
+     * @return List of values in the column
+     */
+    public List<Integer> getValuesInColumn(int column) {
+        List<Integer> missing = getMissingInColumn(column);
+
+        return invertList(missing);
+    }
+
+    /**
      * Returns ordered list of numbers missing in the specified column
      * 
      * @param column
@@ -190,29 +217,6 @@ public class SudokuGrid {
             }
         }
         return result;
-    }
-
-    /**
-     * Resets the grid to the specified dimensions filled with empty cells.
-     */
-    private void resetGrid() {
-        // init cells
-        this.cells = new SudokuCell[gridSize][gridSize];
-
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                this.cells[i][j] = new SudokuCell();
-            }
-        }
-
-        // init segments
-        int noSegments = gridSize / segmentSize;
-        this.segments = new SudokuSegment[noSegments][noSegments];
-        for (int i = 0; i < noSegments; i++) {
-            for (int j = 0; j < noSegments; j++) {
-                this.segments[i][j] = new SudokuSegment(segmentSize);
-            }
-        }
     }
 
     /**
@@ -241,6 +245,31 @@ public class SudokuGrid {
     }
 
     /**
+     * Returns a list containing row indices of the rows in the segments that
+     * contain the specified row. The specified row itself is not in the list
+     *
+     * @param row
+     *            Row
+     * @return List of row indices
+     */
+    public List<Integer> getOtherRowsInSegment(int row) {
+        return getAdjacentIndices(row);
+    }
+
+    /**
+     * Returns a list containing column indices of the columns in the segments
+     * that contain the specified column. The specified column itself is not in
+     * the returned list;
+     *
+     * @param column
+     *            Column
+     * @return List of column indices
+     */
+    public List<Integer> getOtherColumnsInSegment(int column) {
+        return getAdjacentIndices(column);
+    }
+
+    /**
      * Verifies whether the grid is complete;
      * 
      * @return true if grid is complete, false otherwise
@@ -259,7 +288,7 @@ public class SudokuGrid {
     @Override
     public String toString() {
         StringBuffer builder = new StringBuffer();
-        // each cell occupies 3; each line has one start and end char; 
+        // each cell occupies 3; each line has one start and end char;
         // in between cells there is a marker
         int lineLength = (gridSize * 3) + (gridSize - 1) + 2;
         builder.append(StringUtils.repeat("*", lineLength)).append(
@@ -270,24 +299,29 @@ public class SudokuGrid {
 
             for (int column = 0; column < gridSize; column++) {
 
-                builder.append(cells[column][row].toString().replaceAll("\\[", " ").replaceAll("\\]"," "));
-                
+                builder.append(cells[column][row].toString()
+                        .replaceAll("\\[", " ").replaceAll("\\]", " "));
+
                 // segment or column marker
                 int nextCol = column + 1;
-                if (nextCol > 0 && nextCol < (gridSize - 1) && nextCol % segmentSize == 0) {
+                if (nextCol > 0 && nextCol < (gridSize - 1)
+                        && nextCol % segmentSize == 0) {
                     builder.append("*");
-                } else if (nextCol > 0 && nextCol < gridSize ) {
+                } else if (nextCol > 0 && nextCol < gridSize) {
                     builder.append("|");
                 }
             }
             builder.append("*").append(IOUtils.LINE_SEPARATOR);
-            
-            if ((row + 1) > 0 && (row + 1) < (gridSize - 1) && (row + 1) % segmentSize == 0) {
-                builder.append(StringUtils.repeat("*", lineLength)).append(IOUtils.LINE_SEPARATOR);
-                    
-            }
-            else  if (row + 1 < gridSize) {
-                builder.append("*").append(StringUtils.repeat("-", lineLength - 2)).append("*").append(IOUtils.LINE_SEPARATOR);
+
+            if ((row + 1) > 0 && (row + 1) < (gridSize - 1)
+                    && (row + 1) % segmentSize == 0) {
+                builder.append(StringUtils.repeat("*", lineLength)).append(
+                        IOUtils.LINE_SEPARATOR);
+
+            } else if (row + 1 < gridSize) {
+                builder.append("*")
+                        .append(StringUtils.repeat("-", lineLength - 2))
+                        .append("*").append(IOUtils.LINE_SEPARATOR);
             }
         }
 
@@ -295,5 +329,79 @@ public class SudokuGrid {
                 IOUtils.LINE_SEPARATOR);
 
         return builder.toString();
+    }
+
+    /**
+     * Returns a list with the (row or column) indices that are next to the
+     * specified index, but within the same segment. <br/>
+     * <br/>
+     * Since Sudoku grid is square, this implementation works for both rows as
+     * well as columns.
+     * 
+     * @param index
+     *            Index
+     * @return List of indices adjacent to the specified index within the same
+     *         segment
+     */
+    private List<Integer> getAdjacentIndices(int index) {
+        // boundary check
+        if (index < 0 || index >= gridSize) {
+            throw new IllegalArgumentException();
+        }
+
+        // create result list for the indices
+        List<Integer> result = new ArrayList<Integer>(segmentSize - 1);
+
+        // fill the result list
+        int startRow = segmentSize * (index / segmentSize);
+        for (int i = startRow; i < startRow + segmentSize; i++) {
+            if (i != index) {
+                result.add(new Integer(i));
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Creates and returns a list containing all integers 0 < i <= gridSize that
+     * are NOT contained in the supplied list
+     * 
+     * @param valueList
+     *            List of values
+     * @return Inverted list of values
+     */
+    private List<Integer> invertList(List<Integer> valueList) {
+        List<Integer> result = new ArrayList<Integer>();
+
+        for (int i = 1; i <= gridSize; i++) {
+            if (!valueList.contains(i)) {
+                result.add(new Integer(i));
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Resets the grid to the specified dimensions filled with empty cells.
+     */
+    private void resetGrid() {
+        // init cells
+        this.cells = new SudokuCell[gridSize][gridSize];
+
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                this.cells[i][j] = new SudokuCell();
+            }
+        }
+
+        // init segments
+        int noSegments = gridSize / segmentSize;
+        this.segments = new SudokuSegment[noSegments][noSegments];
+        for (int i = 0; i < noSegments; i++) {
+            for (int j = 0; j < noSegments; j++) {
+                this.segments[i][j] = new SudokuSegment(segmentSize);
+            }
+        }
     }
 }

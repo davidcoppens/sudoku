@@ -34,6 +34,19 @@ public class SimpleSolverTest {
     }
 
     @Test
+    public void testThreeStars() throws Exception {
+        SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
+                .toInputStream("1;6;9|;8;|;;\n" + ";;|;;1|5;;\n"
+                        + "5;4;|;9;2|6;;\n" + ";;|1;;|;;3\n" + ";;|;;|7;;|\n"
+                        + ";1;|5;7;|;4;\n" + "9;2;|;;|;7;\n" + ";3;6|;;7|1;2;\n"
+                        + "7;;|;;|4;5;6"));
+        Solver simpleSolver = new SimpleSolver();
+
+        Assert.assertTrue(simpleSolver.solve(grid));
+
+    }
+
+    @Test
     public void testGridMedior() throws Exception {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream(";;|;;|6;;2\n" + ";4;6|;;|;;\n" + ";;|;9;|;1;\n"

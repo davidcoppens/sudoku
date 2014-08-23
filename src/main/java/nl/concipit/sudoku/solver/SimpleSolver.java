@@ -1,6 +1,9 @@
 package nl.concipit.sudoku.solver;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nl.concipit.sudoku.model.SudokuCell;
 import nl.concipit.sudoku.model.SudokuGrid;
@@ -13,11 +16,14 @@ import nl.concipit.sudoku.util.GridUtils;
  *
  */
 public class SimpleSolver implements Solver {
+    private Map<SudokuCell, List<Integer>> possibleValues;   
+    
     /**
      * {@inheritDoc}
      */
     public boolean solve(SudokuGrid grid) {
         boolean isStable = false;
+        possibleValues = new HashMap<SudokuCell, List<Integer>>();
 
         // continue as long as the grid is not complete and our algorithm was
         // able to find at least one new value
@@ -58,23 +64,29 @@ public class SimpleSolver implements Solver {
      */
     private boolean processCell(SudokuGrid grid, int column, int row) {
         SudokuCell cell = grid.getCell(column, row);
+        
         boolean valueFound = false;
-        if (cell.getValue() == null) {
-            // start out with no value
-            Integer value = null;
+        if (cell.getValue() == null) { 
+            // get list of possible values
+            List<Integer> cellValues;
+            if (possibleValues.containsKey(cell)) {
+                cellValues = possibleValues.get(cell);
+            } else {
+                cellValues = new ArrayList<Integer>();
+                cellValues.addAll(GridUtils.getValueList(grid.getGridSize()));
+                possibleValues.put(cell, cellValues);
+            }
 
             // perform simple basic checks on column, row and segment
-            value = performBasicChecks(grid, column, row);
+            performBasicChecks(grid, column, row, cellValues);
 
-            if (value == null) {
-                value = performCrossChecks(grid, column, row);
-            }
-
-            if (value != null) {
+            if (cellValues.size() > 1) {
+                performCrossChecks(grid, column, row, cellValues);
+            } else {
                 cell = null;
-                grid.setCell(column, row, new SudokuCell(value));
+                grid.setCell(column, row, new SudokuCell(cellValues.get(0)));
             }
-            valueFound = value != null;
+            valueFound = grid.getCell(column, row).getValue() != null;
         }
         return valueFound;
 
@@ -91,37 +103,16 @@ public class SimpleSolver implements Solver {
      *            Column
      * @param row
      *            Row
-     * @return Found value, or null if no value was found using this check
+     * @param cellValues possible values for the cell
      */
-    private Integer performBasicChecks(SudokuGrid grid, int column, int row) {
-        Integer value = null;
-        // check whether this column misses exactly 1 value
-        List<Integer> missingInColumn = grid.getMissingInColumn(column);
-        if (missingInColumn.size() == 1) {
-            value = missingInColumn.get(0);
-        }
-
-        // check whether this row misses exactly 1 value
-        if (value == null) {
-            List<Integer> missingInRow = grid.getMissingInRow(row);
-
-            if (missingInRow.size() == 1) {
-                value = missingInRow.get(0);
-            }
-        }
-
-        // check whether this segment misses exactly 1 value
-        if (value == null) {
-            List<Integer> missingInSegment = grid.getMissingInSegment(column,
-                    row);
-            if (missingInSegment.size() == 1) {
-                value = missingInSegment.get(0);
-            }
-        }
-        return value;
+    private void performBasicChecks(SudokuGrid grid, int column, int row, List<Integer> cellValues) {
+        // exclude values in the same column, row or segment
+        cellValues.removeAll(grid.getValuesInColumn(column));
+        cellValues.removeAll(grid.getValuesInRow(row));
+        cellValues.retainAll(grid.getMissingInSegment(column, row));
     }
 
-    private Integer performCrossChecks(SudokuGrid grid, int column, int row) {
+    private void performCrossChecks(SudokuGrid grid, int column, int row, List<Integer> cellValues) {
         // determine overlapping values in all rows
         List<Integer> rows = grid.getOtherRowsInSegment(row);
         List<Integer> overlappingValues = GridUtils.getValueList(grid
@@ -140,10 +131,5 @@ public class SimpleSolver implements Solver {
         }
 
         overlappingValues.retainAll(grid.getMissingInSegment(column, row));
-        if (overlappingValues.size() == 1) {
-            return overlappingValues.get(0);
-        }
-
-        return null;
     }
 }

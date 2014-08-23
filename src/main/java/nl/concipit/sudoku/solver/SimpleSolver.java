@@ -16,8 +16,8 @@ import nl.concipit.sudoku.util.GridUtils;
  *
  */
 public class SimpleSolver implements Solver {
-    private Map<SudokuCell, List<Integer>> possibleValues;   
-    
+    private Map<SudokuCell, List<Integer>> possibleValues;
+
     /**
      * {@inheritDoc}
      */
@@ -58,15 +58,15 @@ public class SimpleSolver implements Solver {
      *            Column index of the cell
      * @param row
      *            Row index of the cell
-     * @return True if the value for the cell was changed. If the cell already
-     *         contains a value, the method does not change the value and as
-     *         such, returns false.
+     * @return True if the list of possible values for the cell was changed. If
+     *         the cell already contains a value, the method does not change the
+     *         value and as such, returns false.
      */
     private boolean processCell(SudokuGrid grid, int column, int row) {
         SudokuCell cell = grid.getCell(column, row);
-        
+
         boolean valueFound = false;
-        if (cell.getValue() == null) { 
+        if (cell.getValue() == null) {
             // get list of possible values
             List<Integer> cellValues;
             if (possibleValues.containsKey(cell)) {
@@ -77,16 +77,22 @@ public class SimpleSolver implements Solver {
                 possibleValues.put(cell, cellValues);
             }
 
+            int preState = cellValues.size();
+
             // perform simple basic checks on column, row and segment
             performBasicChecks(grid, column, row, cellValues);
 
             if (cellValues.size() > 1) {
                 performCrossChecks(grid, column, row, cellValues);
-            } else {
+            }
+
+            if (cellValues.size() == 1) {
                 cell = null;
                 grid.setCell(column, row, new SudokuCell(cellValues.get(0)));
+                cellValues.clear();
             }
-            valueFound = grid.getCell(column, row).getValue() != null;
+            valueFound = grid.getCell(column, row).getValue() != null
+                    || preState != cellValues.size();
         }
         return valueFound;
 
@@ -103,33 +109,74 @@ public class SimpleSolver implements Solver {
      *            Column
      * @param row
      *            Row
-     * @param cellValues possible values for the cell
+     * @param cellValues
+     *            possible values for the cell
      */
-    private void performBasicChecks(SudokuGrid grid, int column, int row, List<Integer> cellValues) {
+    private void performBasicChecks(SudokuGrid grid, int column, int row,
+            List<Integer> cellValues) {
         // exclude values in the same column, row or segment
         cellValues.removeAll(grid.getValuesInColumn(column));
         cellValues.removeAll(grid.getValuesInRow(row));
         cellValues.retainAll(grid.getMissingInSegment(column, row));
     }
 
-    private void performCrossChecks(SudokuGrid grid, int column, int row, List<Integer> cellValues) {
+    private void performCrossChecks(SudokuGrid grid, int column, int row,
+            List<Integer> cellValues) {
         // determine overlapping values in all rows
-        List<Integer> rows = grid.getOtherRowsInSegment(row);
-        List<Integer> overlappingValues = GridUtils.getValueList(grid
+        List<Integer> rows = grid.getRowsInSegment(row);
+        List<Integer> columns = grid.getColumnsInSegment(column);
+
+        // create a list of possible values, which we will use to determine
+        // whether or not
+        // this cell is the only one that can have a particular value when
+        // compared to the
+        // other cells in the same segment
+        List<Integer> exclusiveVals = new ArrayList<Integer>();
+        exclusiveVals.addAll(cellValues);
+        List<Integer> otherCellOverlap = GridUtils.getValueList(grid
                 .getGridSize());
-        for (Integer otherRow : rows) {
-            // keep values that are in this row, as well as all other rows so
-            // far
-            overlappingValues.retainAll(grid.getValuesInRow(otherRow));
+        
+        boolean conclusionPossible = true;
+        // iterate the cells in the segment
+        for (Integer i : columns) {
+            for (Integer j : rows) {
+                if (conclusionPossible && (i != column || j != row)) {
+
+                    SudokuCell otherCell = grid.getCell(i, j);
+
+                    // only interested in cells without value, for which we
+                    // already
+                    // have a list of
+                    // possible values determined
+                    if (otherCell.getValue() == null
+                            && possibleValues.containsKey(otherCell)) {
+
+                        // collect conjunction of possible values for other
+                        // cells
+                        otherCellOverlap.retainAll(possibleValues
+                                .get(otherCell));
+                    }
+                    
+                    // we cannot draw a conclusion without taking all cells into 
+                    // account
+                    conclusionPossible = otherCell.getValue() != null || possibleValues.containsKey(otherCell);
+                }
+            }
         }
 
-        List<Integer> columns = grid.getOtherColumnsInSegment(column);
-        for (Integer otherCol : columns) {
-            // keep values that are in this column, as well as all other columns
-            // so far
-            overlappingValues.retainAll(grid.getValuesInColumn(otherCol));
-        }
+        // remove all overlapping values
+        exclusiveVals.removeAll(otherCellOverlap);
 
-        overlappingValues.retainAll(grid.getMissingInSegment(column, row));
+        // if there is now only 1 value left in the exclusiveVals list, this
+        // means that exactly one of the possible values for the cell CANNOT be
+        // the value for any other cell in the same segment (since it was not
+        // in the list of possible values for any of them).
+        // As such, this cell must get this value and we can update the list of
+        // possible values to reflect this.
+        // If there are more than 1 values left, we cannot draw any conclusion
+        if (conclusionPossible && exclusiveVals.size() == 1) {
+            // only keep the exclusive value
+            cellValues.retainAll(exclusiveVals);
+        }
     }
 }

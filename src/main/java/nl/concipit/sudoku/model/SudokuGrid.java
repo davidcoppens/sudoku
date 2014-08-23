@@ -246,27 +246,26 @@ public class SudokuGrid {
 
     /**
      * Returns a list containing row indices of the rows in the segments that
-     * contain the specified row. The specified row itself is not in the list
-     *
+     * contain the specified row.
+     * 
      * @param row
      *            Row
      * @return List of row indices
      */
-    public List<Integer> getOtherRowsInSegment(int row) {
-        return getAdjacentIndices(row);
+    public List<Integer> getRowsInSegment(int row) {
+        return getIndices(row);
     }
 
     /**
      * Returns a list containing column indices of the columns in the segments
-     * that contain the specified column. The specified column itself is not in
-     * the returned list;
+     * that contain the specified column.
      *
      * @param column
      *            Column
      * @return List of column indices
      */
-    public List<Integer> getOtherColumnsInSegment(int column) {
-        return getAdjacentIndices(column);
+    public List<Integer> getColumnsInSegment(int column) {
+        return getIndices(column);
     }
 
     /**
@@ -276,10 +275,10 @@ public class SudokuGrid {
      */
     public boolean isComplete() {
         boolean isComplete = true;
-        int noSegments = getNumberOfSegments();
-        for (int i = 0; i < noSegments; i++) {
-            for (int j = 0; j < noSegments; j++) {
-                isComplete = isComplete && getMissingInSegment(i, j).isEmpty();
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                isComplete = isComplete && getMissingInColumn(i).isEmpty()
+                        && getMissingInRow(j).isEmpty();
             }
         }
         return isComplete;
@@ -332,8 +331,8 @@ public class SudokuGrid {
     }
 
     /**
-     * Returns a list with the (row or column) indices that are next to the
-     * specified index, but within the same segment. <br/>
+     * Returns a list with the (row or column) indices that are equal to or next
+     * to the specified index, but within the same segment. <br/>
      * <br/>
      * Since Sudoku grid is square, this implementation works for both rows as
      * well as columns.
@@ -343,7 +342,7 @@ public class SudokuGrid {
      * @return List of indices adjacent to the specified index within the same
      *         segment
      */
-    private List<Integer> getAdjacentIndices(int index) {
+    private List<Integer> getIndices(int index) {
         // boundary check
         if (index < 0 || index >= gridSize) {
             throw new IllegalArgumentException();
@@ -355,13 +354,11 @@ public class SudokuGrid {
         // fill the result list
         int startRow = segmentSize * (index / segmentSize);
         for (int i = startRow; i < startRow + segmentSize; i++) {
-            if (i != index) {
-                result.add(new Integer(i));
-            }
+            result.add(new Integer(i));
         }
         return result;
     }
-    
+
     /**
      * Creates and returns a list containing all integers 0 < i <= gridSize that
      * are NOT contained in the supplied list

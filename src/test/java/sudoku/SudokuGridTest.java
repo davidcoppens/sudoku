@@ -237,76 +237,76 @@ public class SudokuGridTest {
     }
     
     @Test
-    public void testGetOtherRowsInSegment() throws IllegalGridInputException {
+    public void testGetRowsInSegment() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        Assert.assertEquals(Arrays.asList(0,2), grid.getOtherRowsInSegment(1));
+        Assert.assertEquals(Arrays.asList(0,1,2), grid.getRowsInSegment(1));
     }
     
     @Test
-    public void testGetOtherRowsInSegmentFirst() throws IllegalGridInputException {
+    public void testGetRowsInSegmentFirst() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        Assert.assertEquals(Arrays.asList(1,2), grid.getOtherRowsInSegment(0));
+        Assert.assertEquals(Arrays.asList(0,1,2), grid.getRowsInSegment(0));
     }
     
     @Test
-    public void testGetOtherRowsInSegmentLast() throws IllegalGridInputException {
+    public void testGetRowsInSegmentLast() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        Assert.assertEquals(Arrays.asList(0,1), grid.getOtherRowsInSegment(2));
+        Assert.assertEquals(Arrays.asList(0,1,2), grid.getRowsInSegment(2));
     }    
     
     @Test(expected=IllegalArgumentException.class)
-    public void testGetOtherRowsInSegmentUpperBound() throws IllegalGridInputException {
+    public void testGetRowsInSegmentUpperBound() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        grid.getOtherRowsInSegment(3);
+        grid.getRowsInSegment(3);
         Assert.fail();
     }
     
     @Test(expected=IllegalArgumentException.class)
-    public void testGetOtherRowsInSegmentLowerBound() throws IllegalGridInputException {
+    public void testGetRowsInSegmentLowerBound() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        grid.getOtherRowsInSegment(-1);
+        grid.getRowsInSegment(-1);
         Assert.fail();
     }    
  
     @Test
-    public void testGetOtherColumnInSegment() throws IllegalGridInputException {
+    public void testGetColumnInSegment() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        Assert.assertEquals(Arrays.asList(0,2), grid.getOtherColumnsInSegment(1));
+        Assert.assertEquals(Arrays.asList(0,1,2), grid.getColumnsInSegment(1));
     }
     
     @Test
-    public void testGetOtherColumnsInSegmentFirst() throws IllegalGridInputException {
+    public void testGetColumnsInSegmentFirst() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        Assert.assertEquals(Arrays.asList(1,2), grid.getOtherColumnsInSegment(0));
+        Assert.assertEquals(Arrays.asList(0,1,2), grid.getColumnsInSegment(0));
     }
     
     @Test
-    public void testGetOtherColumnsInSegmentLast() throws IllegalGridInputException {
+    public void testGetColumnsInSegmentLast() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        Assert.assertEquals(Arrays.asList(0,1), grid.getOtherColumnsInSegment(2));
+        Assert.assertEquals(Arrays.asList(0,1,2), grid.getColumnsInSegment(2));
     }    
     
     @Test(expected=IllegalArgumentException.class)
-    public void testGetOtherColumnsInSegmentUpperBound() throws IllegalGridInputException {
+    public void testGetColumnsInSegmentUpperBound() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        grid.getOtherColumnsInSegment(3);
+        grid.getColumnsInSegment(3);
         Assert.fail();
     }
     
     @Test(expected=IllegalArgumentException.class)
-    public void testGetOtherColumnsInSegmentLowerBound() throws IllegalGridInputException {
+    public void testGetColumnsInSegmentLowerBound() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;3\n2;3;1\n3;1;2"));
-        grid.getOtherColumnsInSegment(-1);
+        grid.getColumnsInSegment(-1);
         Assert.fail();
     } 
     @Test

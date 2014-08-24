@@ -1,4 +1,4 @@
-package sudoku;
+package nl.concipit.sudoku;
 
 import nl.concipit.sudoku.SudokuGridBuilder;
 import nl.concipit.sudoku.exception.IllegalGridInputException;

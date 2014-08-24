@@ -1,4 +1,4 @@
-package sudoku;
+package nl.concipit.sudoku.model;
 
 import java.util.Arrays;
 

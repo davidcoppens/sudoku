@@ -1,4 +1,4 @@
-package sudoku;
+package nl.concipit.sudoku.solver;
 
 import nl.concipit.sudoku.SudokuGridBuilder;
 import nl.concipit.sudoku.model.SudokuGrid;

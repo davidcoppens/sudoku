@@ -83,7 +83,7 @@ public class SimpleSolver implements Solver {
             performBasicChecks(grid, column, row, cellValues);
 
             if (cellValues.size() > 1) {
-                performCrossChecks(grid, column, row, cellValues);
+              performCrossChecks(grid, column, row, cellValues);
             }
 
             if (cellValues.size() == 1) {

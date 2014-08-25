@@ -277,8 +277,7 @@ public class SudokuGrid {
         boolean isComplete = true;
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
-                isComplete = isComplete && getMissingInColumn(i).isEmpty()
-                        && getMissingInRow(j).isEmpty();
+                isComplete = isComplete && getMissingInSegment(i,j).isEmpty();
             }
         }
         return isComplete;

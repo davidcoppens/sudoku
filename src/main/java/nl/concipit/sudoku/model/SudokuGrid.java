@@ -285,48 +285,68 @@ public class SudokuGrid {
 
     @Override
     public String toString() {
-        StringBuffer builder = new StringBuffer();
-        // each cell occupies 3; each line has one start and end char;
+        StringBuilder builder = new StringBuilder ();
+        // each cell occupies 3 each line has one start and end char
         // in between cells there is a marker
         int lineLength = (gridSize * 3) + (gridSize - 1) + 2;
         builder.append(StringUtils.repeat("*", lineLength)).append(
                 IOUtils.LINE_SEPARATOR);
 
         for (int row = 0; row < gridSize; row++) {
-            builder.append("*");
-
-            for (int column = 0; column < gridSize; column++) {
-
-                builder.append(cells[column][row].toString()
-                        .replaceAll("\\[", " ").replaceAll("\\]", " "));
-
-                // segment or column marker
-                int nextCol = column + 1;
-                if (nextCol > 0 && nextCol < (gridSize - 1)
-                        && nextCol % segmentSize == 0) {
-                    builder.append("*");
-                } else if (nextCol > 0 && nextCol < gridSize) {
-                    builder.append("|");
-                }
-            }
-            builder.append("*").append(IOUtils.LINE_SEPARATOR);
-
-            if ((row + 1) > 0 && (row + 1) < (gridSize - 1)
-                    && (row + 1) % segmentSize == 0) {
-                builder.append(StringUtils.repeat("*", lineLength)).append(
-                        IOUtils.LINE_SEPARATOR);
-
-            } else if (row + 1 < gridSize) {
-                builder.append("*")
-                        .append(StringUtils.repeat("-", lineLength - 2))
-                        .append("*").append(IOUtils.LINE_SEPARATOR);
-            }
+            // pocess row
+            rowToString(builder, lineLength, row);
         }
 
         builder.append(StringUtils.repeat("*", lineLength)).append(
                 IOUtils.LINE_SEPARATOR);
 
         return builder.toString();
+    }
+
+    /**
+     * Add string representation of the row to the string builder
+     * @param builder string builder
+     * @param lineLength length of line
+     * @param row row
+     */
+    private void rowToString(StringBuilder builder, int lineLength, int row) {
+        builder.append("*");
+
+        for (int column = 0; column < gridSize; column++) {
+            cellToString(builder, row, column);
+        }
+        builder.append("*").append(IOUtils.LINE_SEPARATOR);
+
+        if ((row + 1) > 0 && (row + 1) < (gridSize - 1)
+                && (row + 1) % segmentSize == 0) {
+            builder.append(StringUtils.repeat("*", lineLength)).append(
+                    IOUtils.LINE_SEPARATOR);
+
+        } else if (row + 1 < gridSize) {
+            builder.append("*")
+                    .append(StringUtils.repeat("-", lineLength - 2))
+                    .append("*").append(IOUtils.LINE_SEPARATOR);
+        }
+    }
+
+    /**
+     * Add string representation of the cell to the string builder
+     * @param builder Builder
+     * @param row Index of cell
+     * @param column Index of cell
+     */
+    private void cellToString(StringBuilder builder, int row, int column) {
+        builder.append(cells[column][row].toString()
+                .replaceAll("\\[", " ").replaceAll("\\]", " "));
+
+        // segment or column marker
+        int nextCol = column + 1;
+        if (nextCol > 0 && nextCol < (gridSize - 1)
+                && nextCol % segmentSize == 0) {
+            builder.append("*");
+        } else if (nextCol > 0 && nextCol < gridSize) {
+            builder.append("|");
+        }
     }
 
     /**

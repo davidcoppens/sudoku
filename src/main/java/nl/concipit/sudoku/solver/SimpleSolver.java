@@ -120,6 +120,13 @@ public class SimpleSolver implements Solver {
         cellValues.retainAll(grid.getMissingInSegment(column, row));
     }
 
+    /**
+     * Perform cross checks for a cell between segments, rows and columns
+     * @param grid Grid
+     * @param column Column
+     * @param row Row
+     * @param cellValues Cell values found so far
+     */
     private void performCrossChecks(SudokuGrid grid, int column, int row,
             List<Integer> cellValues) {
         // determine overlapping values in all rows
@@ -141,25 +148,9 @@ public class SimpleSolver implements Solver {
         for (Integer i : columns) {
             for (Integer j : rows) {
                 if (conclusionPossible && (i != column || j != row)) {
-
-                    SudokuCell otherCell = grid.getCell(i, j);
-
-                    // only interested in cells without value, for which we
-                    // already
-                    // have a list of
-                    // possible values determined
-                    if (otherCell.getValue() == null
-                            && possibleValues.containsKey(otherCell)) {
-
-                        // collect conjunction of possible values for other
-                        // cells
-                        otherCellOverlap.retainAll(possibleValues
-                                .get(otherCell));
-                    }
-                    
-                    // we cannot draw a conclusion without taking all cells into 
-                    // account
-                    conclusionPossible = otherCell.getValue() != null || possibleValues.containsKey(otherCell);
+                    // perform cross-check on cell
+                    conclusionPossible = performCrossCheckCell(grid,
+                            otherCellOverlap, i, j);
                 }
             }
         }
@@ -178,5 +169,37 @@ public class SimpleSolver implements Solver {
             // only keep the exclusive value
             cellValues.retainAll(exclusiveVals);
         }
+    }
+
+    /**
+     * Perform cross check on 1 cell
+     * @param grid Grid
+     * @param otherCellOverlap List of overlapping values from other cells
+     * @param i Cell index
+     * @param j Cell index
+     * @return True if this cell overlaps with possible values
+     */
+    private boolean performCrossCheckCell(SudokuGrid grid,
+            List<Integer> otherCellOverlap, Integer i, Integer j) {
+        boolean conclusionPossible;
+        SudokuCell otherCell = grid.getCell(i, j);
+
+        // only interested in cells without value, for which we
+        // already
+        // have a list of
+        // possible values determined
+        if (otherCell.getValue() == null
+                && possibleValues.containsKey(otherCell)) {
+
+            // collect conjunction of possible values for other
+            // cells
+            otherCellOverlap.retainAll(possibleValues
+                    .get(otherCell));
+        }
+        
+        // we cannot draw a conclusion without taking all cells into 
+        // account
+        conclusionPossible = otherCell.getValue() != null || possibleValues.containsKey(otherCell);
+        return conclusionPossible;
     }
 }

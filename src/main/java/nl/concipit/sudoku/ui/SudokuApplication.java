@@ -35,7 +35,7 @@ public class SudokuApplication extends Application {
 
         Button btn = new Button();
         btn.setText("Generate Sudoku");
-        btn.setOnAction((e) -> setSudokuPane(root));
+        btn.setOnAction(e -> setSudokuPane(root));
 
         root.setTop(btn);
         root.setCenter(null);

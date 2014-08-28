@@ -1,6 +1,7 @@
 package nl.concipit.sudoku.solver;
 
 import nl.concipit.sudoku.SudokuGridBuilder;
+import nl.concipit.sudoku.exception.IllegalGridInputException;
 import nl.concipit.sudoku.model.SudokuGrid;
 import nl.concipit.sudoku.solver.SimpleSolver;
 import nl.concipit.sudoku.solver.Solver;
@@ -25,7 +26,7 @@ public class SimpleSolverTest {
     }
 
     @Test
-    public void testGridSimple() throws Exception {
+    public void testGridSimple() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;2;\n4;5;6\n7;8;9"));
         Solver simpleSolver = new SimpleSolver();
@@ -34,7 +35,7 @@ public class SimpleSolverTest {
     }
 
     @Test
-    public void testThreeStars() throws Exception {
+    public void testThreeStars() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream("1;6;9|;8;|;;\n" + ";;|;;1|5;;\n"
                         + "5;4;|;9;2|6;;\n" + ";;|1;;|;;3\n" + ";;|;;|7;;|\n"
@@ -47,7 +48,7 @@ public class SimpleSolverTest {
     }
 
     @Test
-    public void testGridMedior() throws Exception {
+    public void testGridMedior() throws IllegalGridInputException {
         SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
                 .toInputStream(";;|;;|6;;2\n" + ";4;6|;;|;;\n" + ";;|;9;|;1;\n"
                         + ";;|;3;|8;;\n" + ";2;9|;;4|;;|\n" + ";;|7;2;8|;;4\n"

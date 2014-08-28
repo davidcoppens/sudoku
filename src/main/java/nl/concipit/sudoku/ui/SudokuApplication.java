@@ -16,6 +16,8 @@ import nl.concipit.sudoku.model.SudokuGrid;
 import nl.concipit.sudoku.model.SudokuSegment;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main entry point for the JavaFX user interface
@@ -25,6 +27,8 @@ import org.apache.commons.io.IOUtils;
  */
 @SuppressWarnings("restriction")
 public class SudokuApplication extends Application {
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(SudokuApplication.class);
 
     /**
      * {@inheritDoc}
@@ -56,7 +60,7 @@ public class SudokuApplication extends Application {
         try {
             pane.setCenter(getSudokuPane(generateGrid()));
         } catch (IllegalGridInputException e) {
-            System.out.println("Error: " + e.getMessage());
+            LOGGER.error("Error: {}", e.getMessage(), e);
         }
     }
 
@@ -96,7 +100,7 @@ public class SudokuApplication extends Application {
                 segmentPane.setPadding(new Insets(1, 1, 1, 1));
                 segmentPane.setVgap(2);
                 segmentPane.setHgap(2);
-                segmentPane.setStyle("-fx-background-color: EEEEEE; "
+                segmentPane.setStyle("-fx-background-color: DDDDDD; "
                         + "-fx-border-width: 1;" + "-fx-border-color: AAAAAA;");
                 segmentPane.getChildren().clear();
 
@@ -121,13 +125,19 @@ public class SudokuApplication extends Application {
         for (int i = 0; i < segment.getSize(); i++) {
             for (int j = 0; j < segment.getSize(); j++) {
                 SudokuCell cell = segment.getCell(i, j);
+
                 TextField cellField = new TextField();
                 cellField.setAlignment(Pos.CENTER);
                 cellField.setMaxSize(30, 30);
                 cellField.setMinSize(30, 30);
-                if (cell.getValue() != null) {
+                if (cell.getValue() == null) {
+                    cellField.setEditable(true);
+                } else {
+                    cellField.setEditable(false);
+                    cellField.setStyle("-fx-background-color: #EEEEEE");
                     cellField.setText(cell.getValue().toString());
                 }
+
                 segmentPane.add(cellField, i, j);
             }
         }

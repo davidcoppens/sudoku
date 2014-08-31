@@ -41,7 +41,7 @@ public class SudokuSegmentTest {
     @Test
     public void testIsCompleteSomeFilled() {
         SudokuSegment segment = new SudokuSegment(SIZE);
-        segment.setCell(0, 0, new SudokuCell(4));
+        segment.setCell(0, 0, new SudokuCell(0, 0, 4));
         Assert.assertEquals(false, segment.isComplete());
     }
 
@@ -52,14 +52,14 @@ public class SudokuSegmentTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSetCellOutOfBounds() {
-        new SudokuSegment(SIZE).setCell(-1, -1, new SudokuCell());
+        new SudokuSegment(SIZE).setCell(-1, -1, new SudokuCell(-1, -1));
         Assert.fail();
     }
 
     @Test
     public void testGetCell() {
         SudokuSegment segment = new SudokuSegment(SIZE);
-        SudokuCell cell = new SudokuCell();
+        SudokuCell cell = new SudokuCell(0, 0);
         segment.setCell(0, 0, cell);
         Assert.assertEquals(cell, segment.getCell(0, 0));
     }
@@ -83,7 +83,7 @@ public class SudokuSegmentTest {
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {
                 int value = (row * SIZE) + col + 1;
-                segment.setCell(col, row, new SudokuCell(value));
+                segment.setCell(col, row, new SudokuCell(col, row, value));
             }
         }
     }

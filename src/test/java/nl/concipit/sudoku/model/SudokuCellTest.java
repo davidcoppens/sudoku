@@ -9,25 +9,25 @@ public class SudokuCellTest {
 
     @Test
     public void testValue() {
-        SudokuCell cell = new SudokuCell(5);
+        SudokuCell cell = new SudokuCell(0, 0, 5);
         Assert.assertEquals(new Integer(5), cell.getValue());
     }
 
     @Test
     public void testDefaultConstructor() {
-        SudokuCell cell = new SudokuCell();
+        SudokuCell cell = new SudokuCell(0, 0);
         Assert.assertNull(cell.getValue());
     }
 
     @Test
     public void testToStringNull() {
-        SudokuCell cell = new SudokuCell();
+        SudokuCell cell = new SudokuCell(0, 0);
         Assert.assertEquals("[ ]", cell.toString());
     }
 
     @Test
     public void testToStringValue() {
-        SudokuCell cell = new SudokuCell(new Integer(2));
+        SudokuCell cell = new SudokuCell(0, 0, new Integer(2));
         Assert.assertEquals("[2]", cell.toString());
     }
 }

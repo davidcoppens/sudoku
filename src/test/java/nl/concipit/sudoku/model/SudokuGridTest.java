@@ -102,7 +102,7 @@ public class SudokuGridTest {
     public void testSetCell() {
         SudokuGrid grid = new SudokuGrid(GRID_SIZE, SEGMENT_SIZE);
 
-        SudokuCell cell = new SudokuCell();
+        SudokuCell cell = new SudokuCell(0, 0);
         grid.setCell(0, 0, cell);
         Assert.assertEquals(cell, grid.getCell(0, 0));
     }

@@ -46,6 +46,18 @@ public class SimpleSolverTest {
         Assert.assertTrue(simpleSolver.solve(grid));
 
     }
+    
+    @Test
+    public void testWorldHardest() throws IllegalGridInputException {
+        SudokuGrid grid = SudokuGridBuilder.buildGrid(IOUtils
+                .toInputStream("8;;|;;|;;\n" + ";;3|6;;|;;\n" + ";7;|;9;|2;;\n"
+                        + ";5;|;;7|;;\n" + ";;|;4;5|7;;|\n" + ";;|1;;|;3;\n"
+                        + ";;1|;;|;6;8\n" + ";;8|5;;|;1;\n" + ";9;|;;|4;;"));
+        Solver simpleSolver = new SimpleSolver();
+
+        boolean solved = simpleSolver.solve(grid);
+        Assert.assertTrue(solved);
+    }
 
     @Test
     public void testGridMedior() throws IllegalGridInputException {
@@ -55,6 +67,7 @@ public class SimpleSolverTest {
                         + ";3;4|;;1|2;9;\n" + "9;5;|;;|;;1\n" + ";7;1|;;|;;"));
         Solver simpleSolver = new SimpleSolver();
 
-        Assert.assertTrue(simpleSolver.solve(grid));
+        boolean solved = simpleSolver.solve(grid);
+        Assert.assertTrue(solved);
     }
 }

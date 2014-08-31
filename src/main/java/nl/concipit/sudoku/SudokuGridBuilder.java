@@ -151,7 +151,7 @@ public class SudokuGridBuilder {
             SudokuGrid grid) throws IllegalGridInputException {
         String trimmedCell = cell.trim();
         if (StringUtils.isEmpty(trimmedCell)) {
-            grid.setCell(column, row, new SudokuCell());
+            grid.setCell(column, row, new SudokuCell(column, row));
         } else {
 
             Integer cellValue = Integer.parseInt(trimmedCell);
@@ -166,7 +166,7 @@ public class SudokuGridBuilder {
                     || (cellValue < grid.getGridSize()) && !grid.getMissingInColumn(column).contains(cellValue)) {
                 throw new IllegalGridInputException();
             }
-            grid.setCell(column, row, new SudokuCell(cellValue));
+            grid.setCell(column, row, new SudokuCell(column, row, cellValue));
         }
 
     }

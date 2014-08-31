@@ -407,7 +407,7 @@ public class SudokuGrid {
 
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
-                this.cells[i][j] = new SudokuCell();
+                this.cells[i][j] = new SudokuCell(i,j);
             }
         }
 

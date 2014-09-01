@@ -5,15 +5,25 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
+
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
 import javafx.stage.Stage;
 import nl.concipit.sudoku.SudokuGridBuilder;
 import nl.concipit.sudoku.exception.IllegalGridInputException;
 import nl.concipit.sudoku.model.SudokuCell;
 import nl.concipit.sudoku.model.SudokuGrid;
 import nl.concipit.sudoku.model.SudokuSegment;
+import nl.concipit.sudoku.solver.SimpleSolver;
+import nl.concipit.sudoku.solver.Solver;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -30,6 +40,8 @@ public class SudokuApplication extends Application {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(SudokuApplication.class);
 
+    private SudokuGrid grid;
+
     /**
      * {@inheritDoc}
      */
@@ -37,17 +49,61 @@ public class SudokuApplication extends Application {
     public void start(Stage stage) throws Exception {
         BorderPane root = new BorderPane();
 
+        HBox btnBox = new HBox();
+        btnBox.setPadding(new Insets(5, 5, 5, 5));
         Button btn = new Button();
-        btn.setText("Generate Sudoku");
-        btn.setOnAction(e -> setSudokuPane(root));
+        btn.setText("Solve Sudoku");
+        btn.setOnAction(e -> solveSudokuGrid(new SimpleSolver(), root));
+        btnBox.getChildren().add(btn);
 
-        root.setTop(btn);
+        VBox menuBox = new VBox();
+
+        menuBox.getChildren().add(createMenu(root));
+        menuBox.getChildren().add(btnBox);
+
+        root.setTop(menuBox);
         root.setCenter(null);
-        Scene scene = new Scene(root, 350, 350);
+
+        Scene scene = new Scene(root, 320, 380);
 
         stage.setTitle("Sudoku");
         stage.setScene(scene);
         stage.show();
+    }
+
+    /**
+     * Create menu bar with action items
+     * 
+     * @param pane
+     *            Pane to which to add/reset grid
+     * @return MenuBar
+     */
+    private MenuBar createMenu(BorderPane pane) {
+        MenuBar menuBar = new MenuBar();
+
+        Menu fileMenu = new Menu("File");
+        MenuItem openItem = new MenuItem("Open");
+        openItem.setOnAction(e -> openSudokuGrid(pane));
+        fileMenu.getItems().add(openItem);
+
+        menuBar.getMenus().add(fileMenu);
+
+        return menuBar;
+    }
+
+    /**
+     * Opens a Sudoku and sets it in the center of the supplied pane
+     * 
+     * @param pane
+     *            Pane
+     */
+    private void openSudokuGrid(BorderPane pane) {
+        try {
+            grid = generateGrid();
+            setSudokuPane(pane);
+        } catch (IllegalGridInputException e) {
+            LOGGER.error("Error: {}", e.getMessage(), e);
+        }
     }
 
     /**
@@ -57,10 +113,23 @@ public class SudokuApplication extends Application {
      *            BorderPane to fill the center of
      */
     private void setSudokuPane(BorderPane pane) {
-        try {
-            pane.setCenter(getSudokuPane(generateGrid()));
-        } catch (IllegalGridInputException e) {
-            LOGGER.error("Error: {}", e.getMessage(), e);
+
+        pane.setCenter(getSudokuPane(grid));
+
+    }
+
+    /**
+     * Solve the Sudoku and show result
+     * 
+     * @param solver
+     *            Solver to use
+     * @param pane
+     *            Pane to show result in
+     */
+    private void solveSudokuGrid(Solver solver, BorderPane pane) {
+        if (grid != null) {
+            solver.solve(grid);
+            setSudokuPane(pane);
         }
     }
 
@@ -151,11 +220,10 @@ public class SudokuApplication extends Application {
      *             if the sudoku grid is invalid
      */
     private SudokuGrid generateGrid() throws IllegalGridInputException {
-        return SudokuGridBuilder.buildGrid(IOUtils
-                .toInputStream("1;6;9|;8;|;;\n" + ";;|;;1|5;;\n"
-                        + "5;4;|;9;2|6;;\n" + ";;|1;;|;;3\n" + ";;|;;|7;;|\n"
-                        + ";1;|5;7;|;4;\n" + "9;2;|;;|;7;\n"
-                        + ";3;6|;;7|1;2;\n" + "7;;|;;|4;5;6"));
+        return SudokuGridBuilder.buildGrid(IOUtils.toInputStream("8;;|;;|;;\n"
+                + ";;3|6;;|;;\n" + ";7;|;9;|2;;\n" + ";5;|;;7|;;\n"
+                + ";;|;4;5|7;;|\n" + ";;|1;;|;3;\n" + ";;1|;;|;6;8\n"
+                + ";;8|5;;|;1;\n" + ";9;|;;|4;;"));
     }
 
     /**
